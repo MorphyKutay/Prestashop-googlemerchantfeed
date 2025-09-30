@@ -31,6 +31,8 @@ class GoogleMerchantFeedFeedModuleFrontController extends ModuleFrontController
             $p = new Product((int)$product['id_product'], false, $id_lang, $id_shop);
 
             $item = $channel->addChild('item');
+
+            // Temel bilgiler
             $item->addChild('g:id', $p->id, 'http://base.google.com/ns/1.0');
             $item->addChild('g:title', htmlspecialchars($p->name), 'http://base.google.com/ns/1.0');
             $item->addChild('g:description', htmlspecialchars(strip_tags($p->description_short)), 'http://base.google.com/ns/1.0');
@@ -45,11 +47,11 @@ class GoogleMerchantFeedFeedModuleFrontController extends ModuleFrontController
                 );
             }
 
-            // Fiyat
+            // Fiyat (KDV dahil)
             $price = Product::getPriceStatic($p->id, true, null, 2);
-            $item->addChild('g:price', number_format($price, 2) . ' ' . $currency->iso_code, 'http://base.google.com/ns/1.0');
+            $item->addChild('g:price', number_format($price, 2, '.', '') . ' ' . $currency->iso_code, 'http://base.google.com/ns/1.0');
 
-            // Stok Durumu
+            // Stok durumu
             $qty = StockAvailable::getQuantityAvailableByProduct($p->id, 0, $id_shop);
             $item->addChild('g:availability', ($qty > 0 ? 'in stock' : 'out of stock'), 'http://base.google.com/ns/1.0');
 
@@ -59,7 +61,7 @@ class GoogleMerchantFeedFeedModuleFrontController extends ModuleFrontController
                 $item->addChild('g:brand', htmlspecialchars($brand), 'http://base.google.com/ns/1.0');
             }
 
-            // GTIN / MPN (varsa özelliklerden çekebilirsin)
+            // GTIN / MPN
             if (!empty($p->ean13)) {
                 $item->addChild('g:gtin', $p->ean13, 'http://base.google.com/ns/1.0');
             }
@@ -70,11 +72,15 @@ class GoogleMerchantFeedFeedModuleFrontController extends ModuleFrontController
             // Durum
             $item->addChild('g:condition', 'new', 'http://base.google.com/ns/1.0');
 
-            // Shipping
+            // Shipping (kargo)
             $shipping = $item->addChild('g:shipping', '', 'http://base.google.com/ns/1.0');
             $shipping->addChild('g:country', 'TR', 'http://base.google.com/ns/1.0');
             $shipping->addChild('g:service', 'Standard', 'http://base.google.com/ns/1.0');
-            $shipping->addChild('g:price', '0.00 ' . $currency->iso_code, 'http://base.google.com/ns/1.0'); // ücretsiz kargo varsayıldı
+            $shipping->addChild('g:price', '0.00 ' . $currency->iso_code, 'http://base.google.com/ns/1.0');
+
+            // Ekstra: Google Merchant politikalarına uyum için
+            $item->addChild('g:tax', '', 'http://base.google.com/ns/1.0'); // gerekirse vergi oranını ekleyebilirsin
+            $item->addChild('g:shipping_weight', '', 'http://base.google.com/ns/1.0'); // ürün ağırlığı varsa
         }
 
         echo $xml->asXML();
