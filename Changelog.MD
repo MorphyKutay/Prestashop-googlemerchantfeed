@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.1.2] - 2026-04-01
+### Added
+- Added local inventory feed mode with query parameter: `type=local_inventory`.
+- Added support for required local inventory field: `g:store_code` (via `store_code` query parameter).
+- Added optional `g:quantity` output for in-stock products in local inventory feed.
+
+### Fixed
+- Fixed Merchant Center local inventory validation issues caused by sending product-feed-only attributes (`title`, `description`, `brand`, `image_link`, `mpn`, `condition`, etc.) in local inventory source.
+- Local inventory feed now emits only supported attributes for local inventory processing.
+
+### Changed
+- Feed controller now supports two output modes:
+    - Default product feed (`products`)
+    - Local inventory feed (`local_inventory`)
+- Added fallback store code sanitization from shop name when `store_code` is not provided.
+
+### Notes
+- `store_code` must match the Business Profile store code exactly; Merchant ID is not a valid store code.
+- Use local inventory URL format:
+  `.../feed?type=local_inventory&store_code=YOUR_STORE_CODE`
+
 ## [1.1.1] - 2025-09-30
 ### Added
 - Added missing fields for Google Merchant Feed:
