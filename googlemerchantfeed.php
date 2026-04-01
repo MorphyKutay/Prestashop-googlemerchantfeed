@@ -9,7 +9,7 @@ class GoogleMerchantFeed extends Module
     {
         $this->name = 'googlemerchantfeed';
         $this->tab = 'advertising_marketing';
-        $this->version = '1.1.1';
+        $this->version = '1.1.2';
         $this->author = 'MorphyKutay';
         $this->need_instance = 0;
 
